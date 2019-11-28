@@ -11,7 +11,7 @@ namespace Publisher
         static IBasicProperties properties;
         static void Main(string[] args)
         {
-            CreateQueue();
+            RegisterPublisher();
             var message = "";
             while (message.ToLower() != "cancel")
             {
@@ -24,18 +24,18 @@ namespace Publisher
                     message = Console.ReadLine();
                     for (int i = 1; i <= totalMessage; i++)
                     {
-                        sendMessage($"Message index {i}: {message}");
+                        Publish($"Message index {i}: {message}");
                     }
                 }
             }
         }
 
-        private static void CreateQueue()
+        private static void RegisterPublisher()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
-            channel.QueueDeclare(queue: "task_queue",
+            channel.QueueDeclare(queue: "Email_Render",
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
@@ -44,11 +44,11 @@ namespace Publisher
             properties.Persistent = true;
         }
 
-        private static void sendMessage(string message)
+        private static void Publish(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
             channel.BasicPublish(exchange: "",
-                                routingKey: "task_queue",
+                                routingKey: "Email_Render",
                                 basicProperties: properties,
                                 body: body);
             Console.WriteLine(" [x] Sent {0}", message);
