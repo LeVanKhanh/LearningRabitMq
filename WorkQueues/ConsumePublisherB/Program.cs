@@ -3,7 +3,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Text;
 
-namespace ConsumePublisher
+namespace ConsumePublisherB
 {
     class Program
     {
@@ -30,14 +30,14 @@ namespace ConsumePublisher
 
                 channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-                Console.WriteLine(" [*] Waiting for messages.");
+                Console.WriteLine(" [ConsumePublisherB] Waiting for messages.");
 
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
                     var body = ea.Body;
                     var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(" [x] Received {0}", message);
+                    Console.WriteLine(" [ConsumePublisherA] Received {0}", message);
 
                     Publish(message);
 
@@ -79,7 +79,7 @@ namespace ConsumePublisher
                                 routingKey: "Emails",
                                 basicProperties: publishProperties,
                                 body: body);
-            Console.WriteLine(" [x] Sent {0}", message);
+            Console.WriteLine(" [ConsumePublisherB] Sent {0}_Combined", message);
         }
     }
 }
